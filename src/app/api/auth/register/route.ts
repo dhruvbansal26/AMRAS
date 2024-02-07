@@ -5,6 +5,8 @@ import { RegisterSchema } from "@/schemas";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { getUserByEmail } from "@/data/user";
+import { generateVerificationToken } from "@/data/tokens";
+import { sendVerificationEmail } from "@/lib/mail";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -36,8 +38,11 @@ export async function POST(req: Request) {
       location: "",
     },
   });
+  const verification = await generateVerificationToken(email);
 
-  //TODO: Send verification email token!
-
-  return NextResponse.json({ success: "Email sent!" }, { status: 200 });
+  await sendVerificationEmail(verification.email, verification.token);
+  return NextResponse.json(
+    { success: "Confirmation Email sent!" },
+    { status: 200 }
+  );
 }
