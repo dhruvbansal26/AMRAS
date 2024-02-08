@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { ResetSchema } from "@/schemas";
 import { getUserByEmail } from "@/data/user";
 import { sendPasswordResetEmail } from "@/lib/mail";
-import { generatePasswordResetToken } from "@/data/tokens";
+import { generatePasswordResetToken } from "@/lib/tokens";
 
 export async function POST(req: Request) {
   const body = await req.json();

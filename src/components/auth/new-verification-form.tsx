@@ -37,7 +37,7 @@ const NewVerificationForm = () => {
       backButtonLabel="Back to login"
       backButtonHref="/auth/login"
     >
-      <div className="flex items-center w-full justify-center m-10">
+      <div className="flex items-center w-full justify-center">
         {!successMessage && !errorMessage && <BeatLoader />}
       </div>
       <FormError message={errorMessage}></FormError>
