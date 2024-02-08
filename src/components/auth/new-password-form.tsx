@@ -1,15 +1,15 @@
 "use client";
 import { CardWrapper } from "./card-wrapper";
-import { LoginSchema } from "@/schemas";
+import { NewPasswordSchema } from "@/schemas";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import Link from "next/link";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FormError } from "../form-error";
 import { FormSuccess } from "../form-success";
+import { useSearchParams } from "next/navigation";
 import {
   Form,
   FormControl,
@@ -18,29 +18,33 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
-import { Erica_One } from "next/font/google";
-export const LoginForm = () => {
+export const NewPasswordForm = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
 
-  const form = useForm<z.infer<typeof LoginSchema>>({
-    resolver: zodResolver(LoginSchema),
+  const form = useForm<z.infer<typeof NewPasswordSchema>>({
+    resolver: zodResolver(NewPasswordSchema),
     defaultValues: {
-      email: "",
       password: "",
     },
   });
 
-  async function onSubmit(values: z.infer<typeof LoginSchema>) {
+  async function onSubmit(values: z.infer<typeof NewPasswordSchema>) {
     setErrorMessage("");
     setSuccessMessage("");
     try {
-      const response = await fetch("/api/auth/login", {
+      const requestBody = {
+        ...values,
+        token: token, // Include the token in the request body
+      };
+      const response = await fetch("/api/auth/new-password", {
         method: "POST",
-        body: JSON.stringify(values),
+        body: JSON.stringify(requestBody),
       });
       const data = await response.json();
-      if (response.status === 200) {
+      if (response.ok) {
         setSuccessMessage(data.success);
       }
       setErrorMessage(data.error);
@@ -51,31 +55,13 @@ export const LoginForm = () => {
 
   return (
     <CardWrapper
-      headerLabel="Welcome Back"
-      backButtonLabel="Don't have an account?"
-      backButtonHref="/auth/register"
-      showSocial="true"
+      headerLabel="Enter a new password"
+      backButtonLabel="Back to login"
+      backButtonHref="/auth/login"
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="johndoe@example.com"
-                      type="email"
-                    ></Input>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name="password"
@@ -89,14 +75,6 @@ export const LoginForm = () => {
                       type="password"
                     ></Input>
                   </FormControl>
-                  <Button
-                    size="sm"
-                    variant="link"
-                    asChild
-                    className="px-0 font-normal"
-                  >
-                    <Link href="/auth/reset">Forgot password?</Link>
-                  </Button>
                   <FormMessage />
                 </FormItem>
               )}
@@ -105,7 +83,7 @@ export const LoginForm = () => {
           <FormError message={errorMessage}></FormError>
           <FormSuccess message={successMessage}></FormSuccess>
           <Button type="submit" className="w-full">
-            Login
+            Reset
           </Button>
         </form>
       </Form>

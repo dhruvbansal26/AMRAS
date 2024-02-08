@@ -39,3 +39,4 @@ To learn more about Next.js and other libraries used, take a look at the followi
 - [shadcn/ui](https://ui.shadcn.com/) - for themes and components
 - [Auth.js](https://authjs.dev/) - authentication library
 - [Supabase](https://supabase.com/) - database for the application
+- [Resend](https://resend.com/docs/send-with-nextjs) - to send emails

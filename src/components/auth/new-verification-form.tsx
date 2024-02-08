@@ -13,7 +13,6 @@ const NewVerificationForm = () => {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const onSubmit = useCallback(async () => {
-    console.log(token);
     try {
       const response = await fetch("/api/auth/new-verification", {
         method: "POST",
