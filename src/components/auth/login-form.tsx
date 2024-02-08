@@ -19,6 +19,7 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Erica_One } from "next/font/google";
+import { redirect } from "next/navigation";
 export const LoginForm = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -41,7 +42,7 @@ export const LoginForm = () => {
         body: JSON.stringify(values),
       });
       const data = await response.json();
-      if (response.status === 200) {
+      if (response.ok) {
         setSuccessMessage(data.success);
       }
       if (data.error) {
@@ -64,7 +65,6 @@ export const LoginForm = () => {
       headerLabel="Welcome Back"
       backButtonLabel="Don't have an account?"
       backButtonHref="/auth/register"
-      showSocial="true"
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
