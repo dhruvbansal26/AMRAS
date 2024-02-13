@@ -19,14 +19,19 @@ export const UserButton = () => {
       <DropdownMenuTrigger>
         <Avatar>
           <AvatarImage src={user?.image || ""} />
-          <AvatarFallback className="bg-gray-500">
+          <AvatarFallback className="bg-gray-500 outline-none hover:outline-none">
             <FaUser className="text-black" />
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-40" align="end">
+      <DropdownMenuContent
+        className="font-semibold m-4 mt-0 shadow-md rounded-md pt-2 pb-2 p-4 bg-white text-black text-sm"
+        align="end"
+      >
         <LogoutButton>
-          <DropdownMenuItem>Logout</DropdownMenuItem>
+          <DropdownMenuItem className="outline outline-none hover:outline-none">
+            Logout
+          </DropdownMenuItem>
         </LogoutButton>
       </DropdownMenuContent>
     </DropdownMenu>

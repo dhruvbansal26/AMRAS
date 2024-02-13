@@ -18,8 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
-import { Erica_One } from "next/font/google";
-import { redirect } from "next/navigation";
+
 export const LoginForm = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
