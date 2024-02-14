@@ -1,5 +1,7 @@
 "use client";
 import React from "react";
+import { Button } from "../ui/button";
+import { ExitIcon } from "@radix-ui/react-icons";
 interface LogoutButtonProps {
   children: React.ReactNode;
 }
@@ -13,8 +15,9 @@ export const LogoutButton = ({ children }: LogoutButtonProps) => {
     });
   };
   return (
-    <span onClick={onClick} className="cursor-pointer">
+    <Button variant="outline" onClick={onClick} className="cursor-pointer">
+      <ExitIcon className="mr-2" />
       {children}
-    </span>
+    </Button>
   );
 };

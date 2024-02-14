@@ -6,9 +6,9 @@ const ProfilePage = async () => {
   const session = await auth();
   const user = session?.user;
   return (
-    <div>
+    <>
       <UserInfoCard label="User Profile" user={user}></UserInfoCard>
-    </div>
+    </>
   );
 };
 

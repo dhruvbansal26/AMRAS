@@ -1,6 +1,5 @@
-import { LogoutButton } from "@/components/auth/logout-button";
 import { MapComponent } from "@/components/map-component";
-const SettingsPage = () => {
+const DashboardPage = () => {
   return (
     <>
       <MapComponent></MapComponent>
@@ -8,4 +7,4 @@ const SettingsPage = () => {
   );
 };
 
-export default SettingsPage;
+export default DashboardPage;

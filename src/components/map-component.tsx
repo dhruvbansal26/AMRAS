@@ -1,113 +1,148 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import { MapSchema } from "@/schemas";
-import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { BeatLoader } from "react-spinners";
-// import Autocomplete from "react-google-autocomplete";
 import { Input } from "./ui/input";
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { ChevronsUpDown } from "lucide-react";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import usePlacesAutocomplete, {
+  getGeocode,
+  getLatLng,
+} from "use-places-autocomplete";
 import {
   useJsApiLoader,
   GoogleMap,
   Libraries,
   Marker,
-  Autocomplete,
+  useLoadScript,
 } from "@react-google-maps/api";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "./ui/form";
 import { Button } from "./ui/button";
+
 const libraries: Libraries = ["places", "geocoding"];
 
 export const MapComponent = () => {
-  const { isLoaded } = useJsApiLoader({
-    id: "google-maps-script",
+  const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
     libraries: libraries,
   });
-  const form = useForm<z.infer<typeof MapSchema>>({
-    resolver: zodResolver(MapSchema),
-    defaultValues: {
-      location: "",
-    },
-  });
+
+  if (!isLoaded)
+    return (
+      <>
+        <BeatLoader></BeatLoader>
+      </>
+    );
+  return <Map />;
+};
+
+function Map() {
   const containerStyle = {
     width: "800px",
     height: "400px",
   };
+  const [selected, setSelected] = useState({
+    lat: -3.745,
+    lng: -38.523,
+  });
   const [center, setCenter] = useState({
     lat: -3.745,
     lng: -38.523,
   });
+  return (
+    <div className="flex flex-col items-center space-y-6">
+      <div className="place-container">
+        <PlacesAutocomplete
+          setSelected={setSelected}
+          setCenter={setCenter}
+        ></PlacesAutocomplete>
+      </div>
 
-  if (!isLoaded) {
-    return (
-      <>
-        <BeatLoader />
-      </>
-    );
-  }
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        zoom={10}
+        center={center}
+        mapContainerClassName="map-container"
+      >
+        {selected && <Marker position={selected}></Marker>}
+      </GoogleMap>
+    </div>
+  );
+}
 
-  async function onSubmit(values: z.infer<typeof MapSchema>) {
-    console.log({ location: values.location });
-  }
+const PlacesAutocomplete = ({ setSelected, setCenter }: any) => {
+  const {
+    ready,
+    value,
+    setValue,
+    suggestions: { status, data },
+    clearSuggestions,
+  } = usePlacesAutocomplete();
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("Your Location");
 
-  const handlePlaceSelect = (place: google.maps.places.PlaceResult) => {
-    // Assuming the place has a formatted address, update the form field
+  const handleSelect = async (address: any) => {
+    setValue(address, false);
+    clearSuggestions();
 
-    if (place.formatted_address) {
-      form.setValue("location", place.formatted_address, {
-        shouldValidate: true,
-      });
-      const lat = place.geometry?.location?.lat();
-      const lng = place.geometry?.location?.lng();
-      setCenter({ lat: lat || 0, lng: lng || 0 });
-    }
+    const results = await getGeocode({ address });
+    const { lat, lng } = await getLatLng(results[0]);
+
+    setSelected({ lat, lng });
+    setCenter({ lat, lng });
   };
 
   return (
     <>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="location"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="m-2">Your Location</FormLabel>
-                <FormControl>
-                  {/* <Autocomplete
-                    libraries={libraries}
-                    apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
-                    onPlaceSelected={handlePlaceSelect}
-                    className="w-[400px] h-[40px] shadow-md border font-normal rounded-sm pl-2"
-                  /> */}
-                  <Autocomplete>
-                    <Input
-                      type="text"
-                      placeholder="Enter"
-                      className="w-[400px] h-[40px] shadow-md rounded-sm"
-                    ></Input>
-                  </Autocomplete>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" className="w-full items-center justify-center">
-            Search
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-[400px] justify-between overflow-hidden"
+          >
+            {title}
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
-        </form>
-      </Form>
-      <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={10}>
-        <Marker position={center}></Marker>
-      </GoogleMap>
+        </PopoverTrigger>
+        <PopoverContent className="w-[400px] p-0">
+          <Command>
+            <Input
+              placeholder="Search place..."
+              onChange={(e) => setValue(e.target.value)}
+            />
+
+            <CommandEmpty>No location found.</CommandEmpty>
+            <CommandGroup>
+              {status === "OK" &&
+                data.map(({ place_id, description }) => (
+                  <CommandItem
+                    key={place_id}
+                    value={description}
+                    className="w-[400px] h-[50px]"
+                    onSelect={(currentValue) => {
+                      setTitle(description);
+                      handleSelect(currentValue);
+                      setValue(currentValue === value ? "" : currentValue);
+                      setOpen(false);
+                    }}
+                  >
+                    {description}
+                  </CommandItem>
+                ))}
+            </CommandGroup>
+          </Command>
+        </PopoverContent>
+      </Popover>
     </>
   );
 };
