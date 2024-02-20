@@ -51,6 +51,7 @@ export const ResetForm = () => {
       headerLabel="Forgot your password?"
       backButtonLabel="Back to login"
       backButtonHref="/auth/login"
+      title="CareConnect"
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

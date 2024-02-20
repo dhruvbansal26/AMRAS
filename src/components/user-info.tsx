@@ -1,6 +1,5 @@
 import { ExtendedUser } from "@/next-auth";
 import { Card, CardContent, CardHeader } from "./ui/card";
-
 interface UserInfoProps {
   user?: ExtendedUser;
   label: string;
@@ -29,6 +28,12 @@ export const UserInfoCard = ({ user, label }: UserInfoProps) => {
           <p className="text-sm font-medium">ID</p>
           <p className="truncate text-xs max-w-[180px] font-mono p-1 bg-slate-300 rounded-md">
             {user?.id}
+          </p>
+        </div>
+        <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+          <p className="text-sm font-medium">Location</p>
+          <p className="truncate text-xs max-w-[180px] font-mono p-1 bg-slate-300 rounded-md">
+            {user?.location}
           </p>
         </div>
         <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">

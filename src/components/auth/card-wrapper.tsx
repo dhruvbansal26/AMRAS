@@ -2,6 +2,7 @@
 import { Card, CardContent, CardHeader, CardFooter } from "../ui/card";
 interface CardWrapperProps {
   children: React.ReactNode;
+  title: string;
   headerLabel: string;
   backButtonLabel: string;
   backButtonHref: string;
@@ -12,6 +13,7 @@ import { Header } from "./header";
 import { Social } from "./social";
 
 export const CardWrapper = ({
+  title,
   children,
   headerLabel,
   backButtonLabel,
@@ -21,7 +23,7 @@ export const CardWrapper = ({
   return (
     <Card className="w-[400px] shadow-md ">
       <CardHeader>
-        <Header label={headerLabel} title={"CareConnect"}></Header>
+        <Header label={headerLabel} title={title}></Header>
       </CardHeader>
       <CardContent>{children}</CardContent>
       {showSocial && (

@@ -61,6 +61,7 @@ export const LoginForm = () => {
 
   return (
     <CardWrapper
+      title="CareConnect"
       headerLabel="Welcome Back"
       backButtonLabel="Don't have an account?"
       backButtonHref="/auth/register"

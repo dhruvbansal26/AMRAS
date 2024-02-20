@@ -33,6 +33,7 @@ const NewVerificationForm = () => {
   }, []);
   return (
     <CardWrapper
+      title="CareConnect"
       headerLabel="Confirming your verification"
       backButtonLabel="Back to login"
       backButtonHref="/auth/login"

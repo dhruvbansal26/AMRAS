@@ -8,6 +8,7 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandItem,
+  CommandList,
 } from "@/components/ui/command";
 import {
   Popover,
@@ -18,13 +19,7 @@ import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
 } from "use-places-autocomplete";
-import {
-  useJsApiLoader,
-  GoogleMap,
-  Libraries,
-  Marker,
-  useLoadScript,
-} from "@react-google-maps/api";
+import { Libraries, useLoadScript } from "@react-google-maps/api";
 import { Button } from "./ui/button";
 
 const libraries: Libraries = ["places", "geocoding"];
@@ -34,51 +29,16 @@ export const MapComponent = () => {
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
     libraries: libraries,
   });
-
   if (!isLoaded)
     return (
       <>
         <BeatLoader></BeatLoader>
       </>
     );
-  return <Map />;
+  return <PlacesAutocomplete></PlacesAutocomplete>;
 };
 
-function Map() {
-  const containerStyle = {
-    width: "800px",
-    height: "400px",
-  };
-  const [selected, setSelected] = useState({
-    lat: -3.745,
-    lng: -38.523,
-  });
-  const [center, setCenter] = useState({
-    lat: -3.745,
-    lng: -38.523,
-  });
-  return (
-    <div className="flex flex-col items-center space-y-6">
-      <div className="place-container">
-        <PlacesAutocomplete
-          setSelected={setSelected}
-          setCenter={setCenter}
-        ></PlacesAutocomplete>
-      </div>
-
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        zoom={10}
-        center={center}
-        mapContainerClassName="map-container"
-      >
-        {selected && <Marker position={selected}></Marker>}
-      </GoogleMap>
-    </div>
-  );
-}
-
-const PlacesAutocomplete = ({ setSelected, setCenter }: any) => {
+const PlacesAutocomplete = () => {
   const {
     ready,
     value,
@@ -92,12 +52,6 @@ const PlacesAutocomplete = ({ setSelected, setCenter }: any) => {
   const handleSelect = async (address: any) => {
     setValue(address, false);
     clearSuggestions();
-
-    const results = await getGeocode({ address });
-    const { lat, lng } = await getLatLng(results[0]);
-
-    setSelected({ lat, lng });
-    setCenter({ lat, lng });
   };
 
   return (
@@ -108,14 +62,14 @@ const PlacesAutocomplete = ({ setSelected, setCenter }: any) => {
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-[400px] justify-between overflow-hidden"
+            className="max-w-[200px] justify-between overflow-hidden"
           >
             {title}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[400px] p-0">
-          <Command>
+          <Command className="">
             <Input
               placeholder="Search place..."
               onChange={(e) => setValue(e.target.value)}

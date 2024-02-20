@@ -27,6 +27,56 @@ model User {
   twoFactorConfirmation TwoFactorConfirmation?
   accounts      Account[] // One-to-many relation to Account
   location      String    // Hospital location
+  patients      Patient[] // One-to-many relation to Patient
+  ecmoMachines  ECMOMachine[] // One-to-many relation to ECMOMachine
+}
+
+model Patient {
+  id             String   @id @default(cuid())
+  name           String
+  age            Int
+  currentHospital String
+  score          Int
+  specialCare    SpecialCare[]
+  hospital       User @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+  hospitalId     String
+}
+
+model SpecialCare {
+  id             String   @id @default(cuid())
+  patientId      String
+  category       SpecialCareCategory
+  patient        Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+enum SpecialCareCategory {
+  PEDIATRIC
+  FIRST_RESPONDERS
+  SINGLE_CARETAKERS
+  PREGNANT_PATIENTS
+  SHORT_TERM_SURVIVAL
+}
+
+model ECMOMachine {
+  id             String   @id @default(cuid())
+  currentHospital String
+  inUse          Boolean
+  type           String
+  hospital       User @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+  hospitalId     String
+}
+
+enum ECMOType {
+  PULMONARY
+  CARDIAC
+  ECPR
+}
+
+model TwoFactorConfirmation{
+id String @id @default(cuid())
+userId String
+user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+@@unique([userId])
 }
 
 // Account Model
@@ -75,9 +125,3 @@ model TwoFactorToken{
   @@unique([email, token])
 }
 
-model TwoFactorConfirmation{
-id String @id @default(cuid())
-userId String
-user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-@@unique([userId])
-}

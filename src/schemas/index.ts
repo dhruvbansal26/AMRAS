@@ -25,3 +25,29 @@ export const MapSchema = z.object({
     .min(1, { message: "Minimum 1 character required" })
     .max(100),
 });
+export const NewEcmoSchema = z.object({
+  model: z.string().min(1, { message: "Minimum 1 character required" }).max(30),
+  serial: z
+    .string()
+    .min(1, { message: "Minimum 1 character required" })
+    .max(30),
+  type: z.string().min(1, { message: "Minimum 1 character required" }).max(10),
+  location: z
+    .string()
+    .min(1, { message: "Minimum 1 character required" })
+    .max(100),
+  inUse: z.boolean(),
+});
+export const NewPatientSchema = z.object({
+  name: z.string().min(1, { message: "Minimum 1 character required" }).max(30),
+  age: z.number().min(1).max(100),
+  category: z.string().min(1, { message: "Minimum 1 character required" }),
+  ecmoType: z
+    .string()
+    .min(1, { message: "Minimum 1 character required" })
+    .max(10),
+  location: z
+    .string()
+    .min(1, { message: "Minimum 1 character required" })
+    .max(100),
+});
