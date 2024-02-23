@@ -1,5 +1,5 @@
 import React from "react";
-import { NewEcmoForm } from "@/components/new-ecmo-form";
+import { NewEcmoForm } from "@/components/forms/new-ecmo-form";
 
 const NewEcmoPage = async () => {
   return (

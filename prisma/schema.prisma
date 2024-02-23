@@ -15,6 +15,21 @@ enum UserRole{
   ADMIN
 }
 
+enum SpecialCareCategory {
+  PEDIATRIC
+  FIRST_RESPONDERS
+  SINGLE_CARETAKERS
+  PREGNANT_PATIENTS
+  SHORT_TERM_SURVIVAL
+}
+
+enum ECMOType {
+  PULMONARY
+  CARDIAC
+  ECPR
+}
+
+
 // Hospital Model
 model User {
   id            String    @id @default(cuid())
@@ -27,7 +42,7 @@ model User {
   twoFactorConfirmation TwoFactorConfirmation?
   accounts      Account[] // One-to-many relation to Account
   location      String    // Hospital location
-  patients      Patient[] // One-to-many relation to Patient
+  patients      Patient[]  // One-to-many relation to Patient
   ecmoMachines  ECMOMachine[] // One-to-many relation to ECMOMachine
 }
 
@@ -35,41 +50,21 @@ model Patient {
   id             String   @id @default(cuid())
   name           String
   age            Int
-  currentHospital String
   score          Int
-  specialCare    SpecialCare[]
+  specialCare    SpecialCareCategory
   hospital       User @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
   hospitalId     String
-}
-
-model SpecialCare {
-  id             String   @id @default(cuid())
-  patientId      String
-  category       SpecialCareCategory
-  patient        Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
-}
-
-enum SpecialCareCategory {
-  PEDIATRIC
-  FIRST_RESPONDERS
-  SINGLE_CARETAKERS
-  PREGNANT_PATIENTS
-  SHORT_TERM_SURVIVAL
+  ecmoType       ECMOType? // Optional field to specify the ECMO type needed or in use
 }
 
 model ECMOMachine {
   id             String   @id @default(cuid())
-  currentHospital String
+  model          String  
+  serial         String
   inUse          Boolean
-  type           String
+  type           ECMOType
   hospital       User @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
   hospitalId     String
-}
-
-enum ECMOType {
-  PULMONARY
-  CARDIAC
-  ECPR
 }
 
 model TwoFactorConfirmation{

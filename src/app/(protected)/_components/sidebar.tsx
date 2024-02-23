@@ -52,6 +52,12 @@ export const Sidebar = () => {
           </Button>
           <Button
             asChild
+            variant={pathname === "/all-patients" ? "default" : "outline"}
+          >
+            <Link href="/all-patients">Patients</Link>
+          </Button>
+          <Button
+            asChild
             variant={pathname === "/add-patient" ? "default" : "outline"}
           >
             <Link href="/add-patient">Add Patient</Link>

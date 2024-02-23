@@ -1,4 +1,20 @@
 import * as z from "zod";
+const ECMOType = z.enum(["PULMONARY", "CARDIAC", "ECPR"], {
+  errorMap: (issue, ctx) => ({ message: "Inavlid ECMO type" }),
+});
+const SpecialCareCategory = z.enum(
+  [
+    "PEDIATRIC",
+    "FIRST_RESPONDERS",
+    "SINGLE_CARETAKERS",
+    "PREGNANT_PATIENTS",
+    "SHORT_TERM_SURVIVAL",
+  ],
+  {
+    errorMap: (issue, ctx) => ({ message: "Invalid category" }),
+  }
+);
+
 export const LoginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1, { message: "Password is required" }),
@@ -31,23 +47,24 @@ export const NewEcmoSchema = z.object({
     .string()
     .min(1, { message: "Minimum 1 character required" })
     .max(30),
-  type: z.string().min(1, { message: "Minimum 1 character required" }).max(10),
-  location: z
+  type: ECMOType,
+  hospitalId: z
     .string()
     .min(1, { message: "Minimum 1 character required" })
     .max(100),
   inUse: z.boolean(),
 });
+
 export const NewPatientSchema = z.object({
   name: z.string().min(1, { message: "Minimum 1 character required" }).max(30),
   age: z.number().min(1).max(100),
-  category: z.string().min(1, { message: "Minimum 1 character required" }),
-  ecmoType: z
-    .string()
-    .min(1, { message: "Minimum 1 character required" })
-    .max(10),
-  location: z
+  specialCare: SpecialCareCategory,
+  hospitalId: z
     .string()
     .min(1, { message: "Minimum 1 character required" })
     .max(100),
+  ecmoType: ECMOType.optional(), // Make this optional to match the Prisma schema
+});
+export const LocationSchema = z.object({
+  location: z.string().min(1, { message: "Minimum 1 character required" }),
 });

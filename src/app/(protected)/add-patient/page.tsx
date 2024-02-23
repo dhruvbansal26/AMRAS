@@ -1,5 +1,5 @@
 import React from "react";
-import { NewPatientForm } from "@/components/new-patient-form";
+import { NewPatientForm } from "@/components/forms/new-patient-form";
 const AddPatientPage = async () => {
   return (
     <>

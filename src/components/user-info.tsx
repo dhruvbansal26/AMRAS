@@ -1,5 +1,6 @@
 import { ExtendedUser } from "@/next-auth";
 import { Card, CardContent, CardHeader } from "./ui/card";
+import { Button } from "./ui/button";
 interface UserInfoProps {
   user?: ExtendedUser;
   label: string;
@@ -33,7 +34,11 @@ export const UserInfoCard = ({ user, label }: UserInfoProps) => {
         <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
           <p className="text-sm font-medium">Location</p>
           <p className="truncate text-xs max-w-[180px] font-mono p-1 bg-slate-300 rounded-md">
-            {user?.location}
+            {user?.location ? (
+              user?.location
+            ) : (
+              <Button>Add your location</Button>
+            )}
           </p>
         </div>
         <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">

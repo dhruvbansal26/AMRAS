@@ -1,5 +1,5 @@
 "use client";
-import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 interface RegisterCardWrapperProps {
   children: React.ReactNode;
   title: string;
@@ -8,8 +8,8 @@ interface RegisterCardWrapperProps {
   backButtonHref: string;
   showSocial?: string;
 }
-import { BackButton } from "./auth/back-button";
-import { Header } from "./auth/header";
+import { BackButton } from "../auth/back-button";
+import { Header } from "../auth/header";
 
 export const RegisterCardWrapper = ({
   title,

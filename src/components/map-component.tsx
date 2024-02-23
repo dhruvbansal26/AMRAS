@@ -8,8 +8,16 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandItem,
-  CommandList,
 } from "@/components/ui/command";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./ui/form";
+import { LocationSchema, NewEcmoSchema } from "@/schemas";
 import {
   Popover,
   PopoverContent,
@@ -19,26 +27,69 @@ import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
 } from "use-places-autocomplete";
-import { Libraries, useLoadScript } from "@react-google-maps/api";
+import {
+  GoogleMap,
+  Libraries,
+  Marker,
+  useLoadScript,
+} from "@react-google-maps/api";
+
 import { Button } from "./ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const libraries: Libraries = ["places", "geocoding"];
-
 export const MapComponent = () => {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
     libraries: libraries,
   });
+
   if (!isLoaded)
     return (
       <>
         <BeatLoader></BeatLoader>
       </>
     );
-  return <PlacesAutocomplete></PlacesAutocomplete>;
+  return <Map />;
 };
 
-const PlacesAutocomplete = () => {
+function Map() {
+  const containerStyle = {
+    width: "800px",
+    height: "400px",
+  };
+  const [selected, setSelected] = useState({
+    lat: -3.745,
+    lng: -38.523,
+  });
+  const [center, setCenter] = useState({
+    lat: -3.745,
+    lng: -38.523,
+  });
+  return (
+    <div className="flex flex-col items-center space-y-6">
+      <div className="place-container">
+        <PlacesAutocomplete
+          setSelected={setSelected}
+          setCenter={setCenter}
+        ></PlacesAutocomplete>
+      </div>
+
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        zoom={10}
+        center={center}
+        mapContainerClassName="map-container"
+      >
+        {selected && <Marker position={selected}></Marker>}
+      </GoogleMap>
+    </div>
+  );
+}
+
+const PlacesAutocomplete = ({ setSelected, setCenter }: any) => {
   const {
     ready,
     value,
@@ -48,55 +99,92 @@ const PlacesAutocomplete = () => {
   } = usePlacesAutocomplete();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("Your Location");
-
   const handleSelect = async (address: any) => {
     setValue(address, false);
     clearSuggestions();
+    form.setValue("location", address);
+
+    const results = await getGeocode({ address });
+    const { lat, lng } = await getLatLng(results[0]);
+
+    setSelected({ lat, lng });
+    setCenter({ lat, lng });
   };
+  const form = useForm<z.infer<typeof LocationSchema>>({
+    resolver: zodResolver(LocationSchema),
+    defaultValues: {
+      location: "",
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof LocationSchema>) {
+    console.log(values.location);
+  }
 
   return (
     <>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="max-w-[200px] justify-between overflow-hidden"
-          >
-            {title}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <div className="flex flex-row items-center justify-between">
+            <div className="flex flex-col space-y-4 items-center w-[50%]">
+              <FormItem>
+                <FormLabel>
+                  <FormControl>
+                    <Popover open={open} onOpenChange={setOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={open}
+                          className="w-[400px] justify-between overflow-hidden"
+                        >
+                          {title}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[400px] p-0">
+                        <Command className="">
+                          <Input
+                            placeholder="Search place..."
+                            onChange={(e) => {
+                              setValue(e.target.value); // This is for places autocomplete
+                              // form.setValue("location", e.target.value); // This is to ensure form state updates
+                            }}
+                          />
+                          <CommandEmpty>No location found.</CommandEmpty>
+                          <CommandGroup>
+                            {status === "OK" &&
+                              data.map(({ place_id, description }) => (
+                                <CommandItem
+                                  key={place_id}
+                                  value={description}
+                                  className="w-[400px] h-[50px]"
+                                  onSelect={(currentValue) => {
+                                    setTitle(description);
+                                    handleSelect(currentValue);
+                                    setValue(
+                                      currentValue === value ? "" : currentValue
+                                    );
+                                    setOpen(false);
+                                  }}
+                                >
+                                  {description}
+                                </CommandItem>
+                              ))}
+                          </CommandGroup>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </FormControl>
+                </FormLabel>
+              </FormItem>
+            </div>
+          </div>
+          <Button type="submit" className="w-full">
+            Add
           </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[400px] p-0">
-          <Command className="">
-            <Input
-              placeholder="Search place..."
-              onChange={(e) => setValue(e.target.value)}
-            />
-
-            <CommandEmpty>No location found.</CommandEmpty>
-            <CommandGroup>
-              {status === "OK" &&
-                data.map(({ place_id, description }) => (
-                  <CommandItem
-                    key={place_id}
-                    value={description}
-                    className="w-[400px] h-[50px]"
-                    onSelect={(currentValue) => {
-                      setTitle(description);
-                      handleSelect(currentValue);
-                      setValue(currentValue === value ? "" : currentValue);
-                      setOpen(false);
-                    }}
-                  >
-                    {description}
-                  </CommandItem>
-                ))}
-            </CommandGroup>
-          </Command>
-        </PopoverContent>
-      </Popover>
+        </form>
+      </Form>
     </>
   );
 };
