@@ -1,4 +1,5 @@
 import * as z from "zod";
+
 const ECMOType = z.enum(["PULMONARY", "CARDIAC", "ECPR"], {
   errorMap: (issue, ctx) => ({ message: "Inavlid ECMO type" }),
 });
@@ -67,4 +68,8 @@ export const NewPatientSchema = z.object({
 });
 export const LocationSchema = z.object({
   location: z.string().min(1, { message: "Minimum 1 character required" }),
+  coordinates: z.object({
+    lat: z.number(),
+    lng: z.number(),
+  }),
 });

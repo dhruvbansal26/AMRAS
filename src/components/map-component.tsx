@@ -9,15 +9,8 @@ import {
   CommandGroup,
   CommandItem,
 } from "@/components/ui/command";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "./ui/form";
-import { LocationSchema, NewEcmoSchema } from "@/schemas";
+import { Form, FormControl, FormItem, FormLabel } from "./ui/form";
+import { LocationSchema } from "@/schemas";
 import {
   Popover,
   PopoverContent,
@@ -32,16 +25,19 @@ import {
   Libraries,
   Marker,
   useLoadScript,
+  useJsApiLoader,
 } from "@react-google-maps/api";
-
+import { FormSuccess } from "./form-success";
+import { FormError } from "./form-error";
 import { Button } from "./ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const libraries: Libraries = ["places", "geocoding"];
+
 export const MapComponent = () => {
-  const { isLoaded } = useLoadScript({
+  const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
     libraries: libraries,
   });
@@ -70,7 +66,7 @@ function Map() {
   });
   return (
     <div className="flex flex-col items-center space-y-6">
-      <div className="place-container">
+      <div className=" place-container flex flex-col items-center">
         <PlacesAutocomplete
           setSelected={setSelected}
           setCenter={setCenter}
@@ -90,6 +86,8 @@ function Map() {
 }
 
 const PlacesAutocomplete = ({ setSelected, setCenter }: any) => {
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const {
     ready,
     value,
@@ -107,6 +105,9 @@ const PlacesAutocomplete = ({ setSelected, setCenter }: any) => {
     const results = await getGeocode({ address });
     const { lat, lng } = await getLatLng(results[0]);
 
+    form.setValue("location", address);
+    form.setValue("coordinates", { lat, lng });
+
     setSelected({ lat, lng });
     setCenter({ lat, lng });
   };
@@ -114,11 +115,29 @@ const PlacesAutocomplete = ({ setSelected, setCenter }: any) => {
     resolver: zodResolver(LocationSchema),
     defaultValues: {
       location: "",
+      coordinates: { lat: 0, lng: 0 },
     },
   });
 
   async function onSubmit(values: z.infer<typeof LocationSchema>) {
-    console.log(values.location);
+    setErrorMessage("");
+    setSuccessMessage("");
+    try {
+      const response = await fetch("/api/auth/set-location", {
+        method: "POST",
+        body: JSON.stringify(values),
+      });
+      const data = await response.json();
+      if (response.status === 200) {
+        setSuccessMessage(data.success);
+
+        // console.log(data);
+        form.reset();
+      }
+      setErrorMessage(data.error);
+    } catch (error) {
+      console.log("Error from the server: ", error);
+    }
   }
 
   return (
@@ -126,7 +145,7 @@ const PlacesAutocomplete = ({ setSelected, setCenter }: any) => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="flex flex-row items-center justify-between">
-            <div className="flex flex-col space-y-4 items-center w-[50%]">
+            <div className="flex flex-col space-y-4 items-center w-full">
               <FormItem>
                 <FormLabel>
                   <FormControl>
@@ -145,6 +164,7 @@ const PlacesAutocomplete = ({ setSelected, setCenter }: any) => {
                       <PopoverContent className="w-[400px] p-0">
                         <Command className="">
                           <Input
+                            id="locationInput"
                             placeholder="Search place..."
                             onChange={(e) => {
                               setValue(e.target.value); // This is for places autocomplete
@@ -180,6 +200,8 @@ const PlacesAutocomplete = ({ setSelected, setCenter }: any) => {
               </FormItem>
             </div>
           </div>
+          <FormError message={errorMessage}></FormError>
+          <FormSuccess message={successMessage}></FormSuccess>
           <Button type="submit" className="w-full">
             Add
           </Button>

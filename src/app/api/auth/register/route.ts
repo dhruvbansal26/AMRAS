@@ -36,6 +36,10 @@ export async function POST(req: Request) {
       email,
       password: hashedPassword,
       location: "",
+      coordinates: {
+        lat: 0,
+        lng: 0,
+      },
     },
   });
   const verification = await generateVerificationToken(email);

@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { auth } from "@/auth";
-import { PatientCard } from "../_components/patient-card";
-
+import { DataTable } from "./data-table";
+import { columns } from "./columns";
 const AllPatientsPage = async () => {
   const session = await auth();
   const data = await db.user.findMany({
@@ -14,19 +14,8 @@ const AllPatientsPage = async () => {
   });
 
   return (
-    <div className="p-4 flex flex-col space-y-4 h-full">
-      {data[0].patients.map((patient) => (
-        <PatientCard
-          key={patient.id}
-          id={patient.id}
-          name={patient.name}
-          age={patient.age}
-          score={patient.score}
-          specialCare={patient.specialCare}
-          hospitalId={patient.hospitalId}
-          ecmoType={patient.ecmoType}
-        />
-      ))}
+    <div className="container mx-auto py-10">
+      <DataTable columns={columns} data={data[0].patients} />
     </div>
   );
 };
