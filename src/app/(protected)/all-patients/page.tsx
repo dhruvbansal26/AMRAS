@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { auth } from "@/auth";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
+
 const AllPatientsPage = async () => {
   const session = await auth();
   const data = await db.user.findMany({

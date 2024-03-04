@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
-
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   ColumnDef,
   flexRender,
@@ -12,10 +13,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Input } from "@/components/ui/input";
-
-import { Button } from "@/components/ui/button";
-
 import {
   Table,
   TableBody,
@@ -73,7 +70,7 @@ export function DataTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="text-center">
                       {header.isPlaceholder
                         ? null
                         : flexRender(

@@ -33,7 +33,6 @@ import { CommandInput } from "@/components/ui/command";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { useCurrentUser } from "@/hooks/use-current-user";
-
 export const NewPatientForm = () => {
   const router = useRouter();
   const hospital = useCurrentUser();
@@ -55,6 +54,10 @@ export const NewPatientForm = () => {
         | undefined,
       ecmoType: "" as "PULMONARY" | "CARDIAC" | "ECPR" | undefined,
       hospitalId: hospitalId,
+      coordinates: {
+        lat: 0,
+        lng: 0,
+      },
     },
   });
 

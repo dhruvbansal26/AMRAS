@@ -2,19 +2,9 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Patient } from "@prisma/client";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 import { ArrowUpDown } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 const handleClick = (patientId: string) => async () => {
-  const router = useRouter();
   const res = await fetch(`/api/auth/patient`, {
     method: "DELETE",
     headers: {
@@ -23,8 +13,8 @@ const handleClick = (patientId: string) => async () => {
     body: JSON.stringify({ id: patientId }), // Send the patientId in the request body
   });
   if (res.ok) {
-    router.refresh(); // Refresh the page
-    console.log("Patient removed");
+    const data = await res.json();
+    console.log(data.success);
   } else {
     // Handle errors or unsuccessful deletion
     console.error("Failed to remove patient");
@@ -120,7 +110,11 @@ export const columns: ColumnDef<Patient>[] = [
     cell: ({ row }) => {
       const patientId: string = row.getValue("id");
       // Pass both router and patientId to handleClick
-      return <Button onClick={handleClick(patientId)}>Remove</Button>;
+      return (
+        <Button size="sm" variant="outline" onClick={handleClick(patientId)}>
+          Remove
+        </Button>
+      );
     },
   },
 ];

@@ -1,7 +1,7 @@
 import { UserRole } from "@prisma/client";
 import NextAuth, { type DefaultSession } from "next-auth";
 
-export type ExtendedUser = DefaultSession["user"] & {
+export type ExtendedUser = DefaultSession["User"] & {
   id: string;
   name: string;
   email: string;
@@ -10,6 +10,7 @@ export type ExtendedUser = DefaultSession["user"] & {
   role: UserRole;
   isTwoFactorEnabled: boolean;
   location: string;
+  coordinates: Prisma.JsonValue;
 };
 
 declare module "next-auth" {

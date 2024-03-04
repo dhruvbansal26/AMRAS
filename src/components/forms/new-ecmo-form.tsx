@@ -53,6 +53,10 @@ export const NewEcmoForm = () => {
       type: "" as "PULMONARY" | "CARDIAC" | "ECPR" | undefined,
       hospitalId: hospitalId,
       inUse: false,
+      coordinates: {
+        lat: 0,
+        lng: 0,
+      },
     },
   });
   async function onSubmit(values: z.infer<typeof NewEcmoSchema>) {

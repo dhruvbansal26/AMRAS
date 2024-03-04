@@ -22,6 +22,13 @@ export async function POST(req: Request) {
       { status: 404 }
     );
   }
+
+  const hospital = await db.user.findUnique({
+    where: { id: hospitalId },
+  });
+
+  const coordinates = hospital?.coordinates || "";
+
   await db.eCMOMachine.create({
     data: {
       model,
@@ -29,6 +36,7 @@ export async function POST(req: Request) {
       type,
       hospitalId,
       inUse,
+      coordinates,
     },
   });
 
@@ -36,4 +44,27 @@ export async function POST(req: Request) {
     { success: "ECMO successfully registered!" },
     { status: 200 }
   );
+}
+export async function DELETE(req: Request) {
+  const body = await req.json();
+  const ecmoId = body.id;
+
+  const existingEcmo = await db.eCMOMachine.findUnique({
+    where: {
+      id: ecmoId,
+    },
+  });
+
+  if (!existingEcmo) {
+    return NextResponse.json(
+      { error: "ECMO does not exist!" },
+      { status: 404 }
+    );
+  }
+  await db.patient.delete({
+    where: {
+      id: ecmoId,
+    },
+  });
+  return NextResponse.json({ success: "ECMO removed!" }, { status: 200 });
 }

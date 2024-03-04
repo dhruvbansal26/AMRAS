@@ -54,6 +54,10 @@ export const NewEcmoSchema = z.object({
     .min(1, { message: "Minimum 1 character required" })
     .max(100),
   inUse: z.boolean(),
+  coordinates: z.object({
+    lat: z.number(),
+    lng: z.number(),
+  }),
 });
 
 export const NewPatientSchema = z.object({
@@ -65,6 +69,10 @@ export const NewPatientSchema = z.object({
     .min(1, { message: "Minimum 1 character required" })
     .max(100),
   ecmoType: ECMOType.optional(), // Make this optional to match the Prisma schema
+  coordinates: z.object({
+    lat: z.number(),
+    lng: z.number(),
+  }),
 });
 export const LocationSchema = z.object({
   location: z.string().min(1, { message: "Minimum 1 character required" }),

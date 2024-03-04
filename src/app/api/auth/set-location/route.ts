@@ -26,5 +26,12 @@ export async function POST(req: Request) {
     },
   });
 
+  await db.user.updateMany({
+    where: { id: hospitalId },
+    data: {
+      coordinates: validatedFields.data.coordinates,
+    },
+  });
+
   return NextResponse.json({ success: "Location added!" }, { status: 200 });
 }

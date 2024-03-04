@@ -22,6 +22,12 @@ export async function POST(req: Request) {
       { status: 404 }
     );
   }
+
+  const hospital = await db.user.findUnique({
+    where: { id: hospitalId },
+  });
+
+  const coordinates = hospital?.coordinates || "";
   await db.patient.create({
     data: {
       name,
@@ -30,6 +36,7 @@ export async function POST(req: Request) {
       specialCare,
       hospitalId,
       ecmoType,
+      coordinates,
     },
   });
 
@@ -42,10 +49,23 @@ export async function POST(req: Request) {
 export async function DELETE(req: Request) {
   const body = await req.json();
   const patientId = body.id;
-  const patients = await db.patient.delete({
+
+  const existingPatient = await db.patient.findUnique({
     where: {
       id: patientId,
     },
   });
-  return NextResponse.json(patients, { status: 200 });
+
+  if (!existingPatient) {
+    return NextResponse.json(
+      { error: "Patient does not exist!" },
+      { status: 404 }
+    );
+  }
+  await db.patient.delete({
+    where: {
+      id: patientId,
+    },
+  });
+  return NextResponse.json({ success: "Patient removed!" }, { status: 200 });
 }

@@ -46,6 +46,12 @@ export const Sidebar = () => {
         >
           <Button
             asChild
+            variant={pathname === "/match-list" ? "default" : "outline"}
+          >
+            <Link href="/match-list">Queue</Link>
+          </Button>
+          <Button
+            asChild
             variant={pathname === "/dashboard" ? "default" : "outline"}
           >
             <Link href="/dashboard">Dashboard</Link>
