@@ -53,6 +53,7 @@ export const NewEcmoForm = () => {
       type: "" as "PULMONARY" | "CARDIAC" | "ECPR" | undefined,
       hospitalId: hospitalId,
       inUse: false,
+      isMatched: false,
       coordinates: {
         lat: 0,
         lng: 0,

@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { NewPatientSchema } from "@/schemas";
 import { RegisterCardWrapper } from "./register-card-wrapper";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+
 import {
   Form,
   FormControl,

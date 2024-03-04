@@ -12,7 +12,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: validatedFields.error }, { status: 400 });
   }
 
-  const { model, serial, type, hospitalId, inUse } = validatedFields.data;
+  const { model, serial, type, hospitalId, inUse, isMatched } =
+    validatedFields.data;
 
   const existingUser = await getUserById(hospitalId);
 
@@ -36,6 +37,7 @@ export async function POST(req: Request) {
       type,
       hospitalId,
       inUse,
+      isMatched,
       coordinates,
     },
   });

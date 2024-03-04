@@ -54,6 +54,7 @@ export const NewEcmoSchema = z.object({
     .min(1, { message: "Minimum 1 character required" })
     .max(100),
   inUse: z.boolean(),
+  isMatched: z.boolean(),
   coordinates: z.object({
     lat: z.number(),
     lng: z.number(),

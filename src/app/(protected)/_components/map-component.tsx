@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { BeatLoader } from "react-spinners";
-import { Input } from "./ui/input";
+import { Input } from "../../../components/ui/input";
 import { ChevronsUpDown } from "lucide-react";
 import {
   Command,
@@ -9,7 +9,12 @@ import {
   CommandGroup,
   CommandItem,
 } from "@/components/ui/command";
-import { Form, FormControl, FormItem, FormLabel } from "./ui/form";
+import {
+  Form,
+  FormControl,
+  FormItem,
+  FormLabel,
+} from "../../../components/ui/form";
 import { LocationSchema } from "@/schemas";
 import {
   Popover,
@@ -27,9 +32,9 @@ import {
   useLoadScript,
   useJsApiLoader,
 } from "@react-google-maps/api";
-import { FormSuccess } from "./form-success";
-import { FormError } from "./form-error";
-import { Button } from "./ui/button";
+import { FormSuccess } from "../../../components/form-success";
+import { FormError } from "../../../components/form-error";
+import { Button } from "../../../components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -97,15 +102,26 @@ const PlacesAutocomplete = ({ setSelected, setCenter }: any) => {
   } = usePlacesAutocomplete();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("Your Location");
+
   const handleSelect = async (address: any) => {
-    setValue(address, false);
+    const capitalizeWords = (str: string) =>
+      str.replace(/\b\w/g, (c) => c.toUpperCase());
+
+    // Attempt to capitalize the address except for the state abbreviation
+    let parts = address.split(",").map((part: string) => part.trim());
+    const lastPart =
+      parts.length > 1 ? parts[parts.length - 1].toUpperCase() : "";
+    parts = parts.slice(0, -1).map((part: string) => capitalizeWords(part));
+    if (lastPart) parts.push(lastPart); // Add the fully capitalized last part back
+    const formattedAddress = parts.join(", ");
+
+    setValue(formattedAddress, false);
     clearSuggestions();
-    form.setValue("location", address);
 
     const results = await getGeocode({ address });
     const { lat, lng } = await getLatLng(results[0]);
 
-    form.setValue("location", address);
+    form.setValue("location", formattedAddress);
     form.setValue("coordinates", { lat, lng });
 
     setSelected({ lat, lng });
@@ -167,8 +183,7 @@ const PlacesAutocomplete = ({ setSelected, setCenter }: any) => {
                             id="locationInput"
                             placeholder="Search place..."
                             onChange={(e) => {
-                              setValue(e.target.value); // This is for places autocomplete
-                              // form.setValue("location", e.target.value); // This is to ensure form state updates
+                              setValue(e.target.value);
                             }}
                           />
                           <CommandEmpty>No location found.</CommandEmpty>
