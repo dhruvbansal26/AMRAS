@@ -54,8 +54,7 @@ const DistanceComponent = ({ patientCoordinates, ecmoCoordinates }: any) => {
 
   return (
     <div>
-      ECMO Location: {ecmoCoordinates.lat}, {ecmoCoordinates.lng}
-      Distance: {distance}, Duration: {duration}
+      {ecmoCoordinates.lat}, {ecmoCoordinates.lng} {distance} {duration}
     </div>
   );
 };

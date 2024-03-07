@@ -7,6 +7,24 @@ import { getUserById } from "@/data/user";
 import { auth } from "@/auth";
 import { handlePatientUpdate } from "@/lib/pusher";
 import { PatientData } from "@/types";
+import { handleQueueUpdate } from "@/lib/pusher";
+
+function computeScore(specialCare: string) {
+  switch (specialCare) {
+    case "PEDIATRIC":
+      return 5;
+    case "FIRST_RESPONDERS":
+      return 4;
+    case "SINGLE_CARETAKERS":
+      return 3;
+    case "PREGNANT_PATIENTS":
+      return 2;
+    case "SHORT_TERM_SURVIVAL":
+      return 1;
+    default:
+      return 0; // Default score for unspecified or unknown categories
+  }
+}
 
 export async function GET(req: Request) {
   const session = await auth();
@@ -53,11 +71,13 @@ export async function POST(req: Request) {
 
   const coordinates = hospital?.coordinates || "";
 
+  const score = computeScore(specialCare);
+
   const newPatient: PatientData = await db.patient.create({
     data: {
       name,
       age,
-      score: 0,
+      score: score,
       specialCare,
       hospitalId,
       ecmoType,
@@ -66,6 +86,7 @@ export async function POST(req: Request) {
   });
 
   await handlePatientUpdate("add", newPatient);
+  await handleQueueUpdate();
 
   return NextResponse.json(
     { success: "Patient successfully registered!" },
@@ -95,6 +116,7 @@ export async function DELETE(req: Request) {
     },
   });
   await handlePatientUpdate("remove", removedPatient);
+  await handleQueueUpdate();
 
   return NextResponse.json({ success: "Patient removed!" }, { status: 200 });
 }
@@ -131,6 +153,7 @@ export async function PUT(req: Request) {
   });
 
   await handlePatientUpdate("update", updatedPatient);
+  await handleQueueUpdate();
 
   return NextResponse.json({ success: "Patient updated!" }, { status: 200 });
 }

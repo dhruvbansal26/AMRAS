@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogoutButton } from "@/components/auth/logout-button";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   DoubleArrowRightIcon,
   DoubleArrowLeftIcon,
@@ -61,6 +61,12 @@ export const Sidebar = () => {
             variant={pathname === "/all-patients" ? "default" : "outline"}
           >
             <Link href="/all-patients">Patients</Link>
+          </Button>
+          <Button
+            asChild
+            variant={pathname === "/all-ecmos" ? "default" : "outline"}
+          >
+            <Link href="/all-ecmos">ECMOs</Link>
           </Button>
           <Button
             asChild

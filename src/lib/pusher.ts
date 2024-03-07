@@ -1,6 +1,7 @@
 import PusherServer from "pusher";
-import PusherClient from "pusher-js";
+
 import { PatientData } from "@/types";
+import { ECMOMachineData } from "@/types";
 
 export const pusherServer = new PusherServer({
   appId: process.env.PUSHER_APP_ID || "",
@@ -19,4 +20,18 @@ export async function handlePatientUpdate(
     action, // 'add' or 'remove'
     patient: patientData, // Rename 'newPatient' to 'patient' for clarity
   });
+}
+
+export async function handleECMOUpdate(
+  action: "add" | "remove" | "update",
+  ecmoMachineData: ECMOMachineData
+) {
+  pusherServer.trigger("ecmo-channel", "ecmo-update", {
+    action, // 'add' or 'remove'
+    ecmoMachine: ecmoMachineData, // Rename 'newPatient' to 'patient' for clarity
+  });
+}
+
+export async function handleQueueUpdate() {
+  pusherServer.trigger("queue-channel", "queue-update", {});
 }

@@ -63,7 +63,7 @@ model ECMOMachine {
   model          String  
   serial         String
   inUse          Boolean
-  isMatched        Boolean
+  isMatched      Boolean
   type           ECMOType
   hospital       User @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
   hospitalId     String
