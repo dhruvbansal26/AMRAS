@@ -86,6 +86,12 @@ export const Sidebar = () => {
           >
             <Link href="/profile">Profile</Link>
           </Button>
+          <Button
+            asChild
+            variant={pathname === "/settings" ? "default" : "outline"}
+          >
+            <Link href="/settings">Settings</Link>
+          </Button>
         </div>
         <div className={`justify-end ${isCollapsed ? "hidden" : ""}`}>
           <LogoutButton>Logout</LogoutButton>

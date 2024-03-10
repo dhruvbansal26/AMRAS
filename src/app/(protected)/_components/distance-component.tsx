@@ -53,8 +53,12 @@ const DistanceComponent = ({ patientCoordinates, ecmoCoordinates }: any) => {
   if (!isLoaded) return <div>Loading Maps</div>;
 
   return (
-    <div>
-      {ecmoCoordinates.lat}, {ecmoCoordinates.lng} {distance} {duration}
+    <div className="flex flex-row items-end space-x-2 w-[280px]">
+      <p>
+        {ecmoCoordinates.lat}, {ecmoCoordinates.lng}{" "}
+      </p>
+      <p>{distance}</p>
+      <p> {duration}</p>
     </div>
   );
 };

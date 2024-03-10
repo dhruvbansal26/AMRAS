@@ -4,6 +4,18 @@ import { PatientData, ECMOMachineData } from "@/types";
 import PusherClient from "pusher-js";
 import PatientCard from "../_components/patient-card";
 import { BeatLoader } from "react-spinners";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import DistanceComponent from "../_components/distance-component";
+import { calculateDistanceAndDuration } from "../_components/calculate-distance";
+
 // Define the type for the matches object
 interface Matches {
   [key: string]: ECMOMachineData[];
@@ -78,6 +90,7 @@ const MatchList = () => {
         matches[patient.id] = []; // Assign an empty array if no match found
       }
     });
+
     setIsLoading(false); // Start loading
     setEcmoMachines(updatedEcmosData); // Update global state with new matched statuses
     setMatchedEcmos(matches);
@@ -93,31 +106,44 @@ const MatchList = () => {
 
   return (
     <div>
-      {patients.map((patient) => {
-        const patientEcmos = matchedEcmos[patient.id] || []; // Fallback to empty array if null
-        return (
-          <>
-            {patientEcmos.length > 0 ? (
-              patientEcmos.map((ecmoMachine) => (
-                <>
-                  <PatientCard
-                    ecmoType={ecmoMachine.type}
-                    ecmoCoordinates={ecmoMachine.coordinates}
-                    patientCoordinates={patient.coordinates}
-                    patientId={patient.id}
-                    patientName={patient.name}
-                  ></PatientCard>
-                </>
+      <Table>
+        <TableCaption>
+          A list of matched ECMO machines to patients.
+        </TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-1/3">Patient Name</TableHead>
+            <TableHead className="w-1/3">ECMO Type</TableHead>
+            <TableHead className="text-right w-1/3">Machine Info</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {patients.map((patient) => {
+            const patientEcmos = matchedEcmos[patient.id] || [];
+
+            return patientEcmos.length > 0 ? (
+              patientEcmos.map((ecmoMachine, index) => (
+                <TableRow key={index}>
+                  <TableCell>{patient.name}</TableCell>
+                  <TableCell>{patient.ecmoType}</TableCell>
+                  <TableCell className="text-center w-full">
+                    <DistanceComponent
+                      patientCoordinates={patient.coordinates}
+                      ecmoCoordinates={ecmoMachine.coordinates}
+                    />
+                  </TableCell>
+                </TableRow>
               ))
             ) : (
-              <PatientCard
-                patientName={patient.name}
-                errorMessage="No matches found."
-              ></PatientCard>
-            )}
-          </>
-        );
-      })}
+              <TableRow key={`no-match-${patient.id}`}>
+                <TableCell>{patient.name}</TableCell>
+                <TableCell>{patient.ecmoType}</TableCell>
+                <TableCell className="text-right">No matches found</TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
     </div>
   );
 };

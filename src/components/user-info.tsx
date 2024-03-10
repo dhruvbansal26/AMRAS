@@ -1,5 +1,6 @@
 import { ExtendedUser } from "@/next-auth";
 import { Card, CardContent, CardHeader } from "./ui/card";
+
 interface UserInfoProps {
   user?: ExtendedUser;
   label: string;

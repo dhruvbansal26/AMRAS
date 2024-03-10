@@ -82,3 +82,10 @@ export const LocationSchema = z.object({
     lng: z.number(),
   }),
 });
+export const SettingsSchema = z.object({
+  name: z.optional(z.string()),
+  isTwoFactorEnabled: z.optional(z.boolean()),
+  email: z.optional(z.string().email()),
+  password: z.optional(z.string().min(6)),
+  newPassword: z.optional(z.string().min(6)),
+});

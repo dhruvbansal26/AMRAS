@@ -1,13 +1,17 @@
-import type { Config } from "tailwindcss"
+import type { Config } from "tailwindcss";
+const {
+  default: flattenColorPalette,
+} = require("tailwindcss/lib/util/flattenColorPalette");
 
 const config = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-	],
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
+
   prefix: "",
   theme: {
     container: {
@@ -17,7 +21,71 @@ const config = {
         "2xl": "1400px",
       },
     },
+    keyframes: {
+      gradient: {
+        "0%, 100%": {
+          "background-size": "200% 200%",
+          "background-position": "left center",
+        },
+        "50%": {
+          "background-size": "200% 200%",
+          "background-position": "right center",
+        },
+      },
+      shimmer: {
+        from: {
+          backgroundPosition: "0 0",
+        },
+        to: {
+          backgroundPosition: "-200% 0",
+        },
+      },
+      moveHorizontal: {
+        "0%": {
+          transform: "translateX(-50%) translateY(-10%)",
+        },
+        "50%": {
+          transform: "translateX(50%) translateY(10%)",
+        },
+        "100%": {
+          transform: "translateX(-50%) translateY(-10%)",
+        },
+      },
+      moveInCircle: {
+        "0%": {
+          transform: "rotate(0deg)",
+        },
+        "50%": {
+          transform: "rotate(180deg)",
+        },
+        "100%": {
+          transform: "rotate(360deg)",
+        },
+      },
+      moveVertical: {
+        "0%": {
+          transform: "translateY(-50%)",
+        },
+        "50%": {
+          transform: "translateY(50%)",
+        },
+        "100%": {
+          transform: "translateY(-50%)",
+        },
+      },
+    },
     extend: {
+      animation: {
+        "gradient-x": "gradient 3s ease infinite",
+        spin: "spin 2s linear infinite",
+        shimmer: "shimmer 2s linear infinite",
+        first: "moveVertical 30s ease infinite",
+        second: "moveInCircle 20s reverse infinite",
+        third: "moveInCircle 40s linear infinite",
+        fourth: "moveHorizontal 40s ease infinite",
+        fifth: "moveInCircle 20s ease infinite",
+      },
+
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -68,13 +136,39 @@ const config = {
           to: { height: "0" },
         },
       },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-      },
+    },
+    darkMode: "class",
+    fontFamily: {
+      sans: [
+        '"Pepi"',
+        "ui-sans-serif",
+        "system-ui",
+        "-apple-system",
+        "BlinkMacSystemFont",
+        '"Segoe UI"',
+        "Roboto",
+        '"Helvetica Neue"',
+        "Arial",
+        '"Noto Sans"',
+        "sans-serif",
+        '"Apple Color Emoji"',
+        '"Segoe UI Emoji"',
+        '"Segoe UI Symbol"',
+        '"Noto Color Emoji"',
+      ],
     },
   },
-  plugins: [require("tailwindcss-animate")],
-} satisfies Config
+  plugins: [require("tailwindcss-animate"), addVariablesForColors],
+} satisfies Config;
+// This plugin adds each Tailwind color as a global CSS variable, e.g. var(--gray-200).
+function addVariablesForColors({ addBase, theme }: any) {
+  let allColors = flattenColorPalette(theme("colors"));
+  let newVars = Object.fromEntries(
+    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+  );
 
-export default config
+  addBase({
+    ":root": newVars,
+  });
+}
+export default config;
